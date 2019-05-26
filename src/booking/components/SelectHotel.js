@@ -11,7 +11,7 @@ import lazyWithPreload from '../../utils/lazyWithPreload';
 
 const RatingChart = lazyWithPreload(() => import('./RatingChart'));
 
-const SelectHotel = memo( props => {
+const SelectHotel = memo(props => {
   const [hotels, setHotels] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [filters, setFilters] = useState({});
@@ -19,7 +19,8 @@ const SelectHotel = memo( props => {
   const [isChartVisible, setChartVisible] = useState(false);
   const [chartData, setChartData] = useState([]);
 
-  useEffect(() => {
+  useEffect(() => { // the hook is fired in ComponentDidMount
+    RatingChart.preload();
     setIsLoading(true);
     fetch(ONLINE_URL)
       .then(response => response.json())
@@ -43,7 +44,6 @@ const SelectHotel = memo( props => {
   }, [filteredHotels, sortField]);
 
   const handleSort = field => setSortField(field);
-
   function toggleChartVisibility(chartVisible) {
     setChartVisible(chartVisible);
   }

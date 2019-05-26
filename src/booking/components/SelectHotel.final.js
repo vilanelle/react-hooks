@@ -21,7 +21,7 @@ const SelectHotel = props => {
   const [isChartVisible, setChartVisible] = useState(false);
   const { selectHotel } = useBookingFlow();
 
-  useEffect(() => {
+  useEffect(() => { 
     const fetchData = async () => {
       RatingChart.preload();
       setIsLoading(true);
