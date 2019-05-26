@@ -21,19 +21,19 @@ const Example = ({ data }) => (
         dataKey="rating"
         name="ocena gości"
         unit="/10"
-      />
+        />
       <ZAxis
         type="number"
         dataKey="reviews"
         range={[30, 500]}
         name="ilość opinii"
-      />
+        />
       <Tooltip
         content={<CustomTooltip />}
         cursor={{
           strokeDasharray: '3 3',
         }}
-      />
+        />
       <Scatter data={data} fill="#2185d0" />
     </ScatterChart>
   </ResponsiveContainer>

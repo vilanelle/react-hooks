@@ -1,17 +1,17 @@
 // eslint disable no-unused-var
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, memo, Suspense } from 'react';
 import axios from 'axios';
 import { Grid, Loader, Container } from 'semantic-ui-react';
-
 import Filters from './Filters';
 import SortBar from './SortBar';
 import HotelsList from './HotelsList';
 import ChartSwitcher from './ChartSwitcher';
-import RatingChart from './RatingChart';
-
 import { ONLINE_URL, BEDS_TYPE } from '../../utils/const';
+import lazyWithPreload from '../../utils/lazyWithPreload';
 
-const SelectHotel = props => {
+const RatingChart = lazyWithPreload(() => import('./RatingChart'));
+
+const SelectHotel = memo( props => {
   const [hotels, setHotels] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [filters, setFilters] = useState({});
@@ -64,7 +64,9 @@ const SelectHotel = props => {
             <Loader active inline="centered" />
             ) : (
               <React.Fragment>
-              {isChartVisible && <RatingChart data={chartData} />}
+                <Suspense fallback={ <Loader active inline="centered" />}>
+                  {isChartVisible && <RatingChart data={chartData} />}
+                </Suspense>
               <HotelsList hotels={displayedHotels} selectHotel={noop} />
               </React.Fragment>
           )}
@@ -72,7 +74,7 @@ const SelectHotel = props => {
       </Layout>
     </Container>
   );
-};
+});
 
 const noop = () => {};
 
@@ -128,3 +130,5 @@ Layout.Sidebar = Sidebar;
 Layout.Feed = Feed;
 
 export default SelectHotel;
+// or: 
+// export default memo(SelectHotel);
