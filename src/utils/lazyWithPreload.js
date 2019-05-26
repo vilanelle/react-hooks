@@ -2,6 +2,6 @@ import React from 'react';
 
 export default function lazyWithPreload(factory) {
   const Component = React.lazy(factory);
-  Component.preload = factory;
+  Component.preload = factory; // fires function on preload
   return Component;
 }
