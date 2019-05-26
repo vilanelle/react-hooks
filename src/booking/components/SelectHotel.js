@@ -45,17 +45,21 @@ const SelectHotel = props => {
   function handleSort(field) {
     setSortField(field);
   }
-  
+
   function toggleChartVisibility(chartVisible) {
     setChartVisible(chartVisible);
   }
+  const hotelCount = useMemo(() => {
+    return countHotelsByBedType(displayedHotels);
+  }, [displayedHotels]);
+
   return (
     <Container>
       <SortBar sortField={sortField} setField={handleSort} />
       <Layout>
         <Layout.Sidebar>
           <ChartSwitcher isChartVisible={isChartVisible} switchChartVisible={toggleChartVisibility} />
-          <Filters count={{}} onChange={handleSetFilters} />
+          <Filters count={hotelCount} onChange={handleSetFilters} />
         </Layout.Sidebar>
         <Layout.Feed isLoading={isLoading}>
           {isLoading ? (
@@ -63,7 +67,7 @@ const SelectHotel = props => {
             ) : (
               <React.Fragment>
               {isChartVisible && <RatingChart data={chartData} />}
-            <HotelsList hotels={displayedHotels} selectHotel={noop} />
+              <HotelsList hotels={displayedHotels} selectHotel={noop} />
               </React.Fragment>
           )}
         </Layout.Feed>
