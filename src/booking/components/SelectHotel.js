@@ -1,3 +1,4 @@
+// eslint disable no-unused-var
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { Grid, Loader, Container } from 'semantic-ui-react';
@@ -13,16 +14,25 @@ import { ONLINE_URL, BEDS_TYPE } from '../../utils/const';
 const SelectHotel = props => {
   const [hotels, setHotels] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [filters, setFilters] = useState({});
 
   useEffect(() => {
     setIsLoading(true);
     fetch(ONLINE_URL)
       .then(response => response.json())
       .then(data => {
-        setHotels(data.list); // set hotels in state
+        setHotels(data.list.slice(0,10)); // set hotels in state
         setIsLoading(false);
       });
   }, []); // empty array because we only run once 
+
+  function handleSetFilters(v, checked) {
+    setFilters(prevState => ({...prevState, [v]: checked}));
+  }
+
+  const filteredHotels = useMemo(() => {
+    return applyFilter(filters, hotels);
+  }, [filters, hotels]);
 
   return (
     <Container>
@@ -30,14 +40,14 @@ const SelectHotel = props => {
       <Layout>
         <Layout.Sidebar>
           <ChartSwitcher isChartVisible={false} switchChartVisible={noop} />
-          <Filters count={{}} onChange={noop()} />
+          <Filters count={{}} onChange={handleSetFilters} />
         </Layout.Sidebar>
         <Layout.Feed isLoading={isLoading}>
           {false && <RatingChart data={[]} />}
           {isLoading ? (
             <Loader active inline="centered" />
           ) : (
-            <HotelsList hotels={hotels} selectHotel={noop} />
+            <HotelsList hotels={filteredHotels} selectHotel={noop} />
           )}
         </Layout.Feed>
       </Layout>
@@ -47,6 +57,7 @@ const SelectHotel = props => {
 
 const noop = () => {};
 
+
 function countHotelsByBedType(data) {
   return data.reduce(function(acc, v) {
     acc[v.room] = acc[v.room] ? acc[v.room] + 1 : 1;
@@ -55,7 +66,9 @@ function countHotelsByBedType(data) {
 }
 
 function applyFilter(filters, data) {
-  const isFilterSet = BEDS_TYPE.find(b => filters[b.value]);
+  const isFilterSet = BEDS_TYPE.find(b => {
+    return filters[b.value]
+  });
   if (!isFilterSet) {
     return data;
   }
