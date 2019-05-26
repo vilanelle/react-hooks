@@ -11,6 +11,16 @@ import RatingChart from './RatingChart';
 import { ONLINE_URL, BEDS_TYPE } from '../../utils/const';
 
 const SelectHotel = props => {
+  const [hotels, setHotels] = useState([]);
+
+  useEffect(() => {
+    fetch(ONLINE_URL)
+      .then(response => response.json())
+      .then(data => {
+        setHotels(data.list); // set hotels in state
+      });
+  }, []); // empty array because we only run once
+
   return (
     <Container>
       <SortBar sortField={'price'} setField={noop} />
@@ -24,7 +34,7 @@ const SelectHotel = props => {
           {false ? (
             <Loader active inline="centered" />
           ) : (
-            <HotelsList hotels={[]} selectHotel={noop} />
+            <HotelsList hotels={hotels} selectHotel={noop} />
           )}
         </Layout.Feed>
       </Layout>
