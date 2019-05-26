@@ -16,6 +16,8 @@ const SelectHotel = props => {
   const [isLoading, setIsLoading] = useState(false);
   const [filters, setFilters] = useState({});
   const [sortField, setSortField] = useState('price');
+  const [isChartVisible, setChartVisible] = useState(false);
+  const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -23,6 +25,7 @@ const SelectHotel = props => {
       .then(response => response.json())
       .then(data => {
         setHotels(data.list.slice(0,10)); // set hotels in state
+        setChartData(prepareChartData(data.list.slice(0,10))); // set chart data
         setIsLoading(false);
       });
   }, []); // empty array because we only run once 
@@ -42,21 +45,26 @@ const SelectHotel = props => {
   function handleSort(field) {
     setSortField(field);
   }
- 
+  
+  function toggleChartVisibility(chartVisible) {
+    setChartVisible(chartVisible);
+  }
   return (
     <Container>
       <SortBar sortField={sortField} setField={handleSort} />
       <Layout>
         <Layout.Sidebar>
-          <ChartSwitcher isChartVisible={false} switchChartVisible={noop} />
+          <ChartSwitcher isChartVisible={isChartVisible} switchChartVisible={toggleChartVisibility} />
           <Filters count={{}} onChange={handleSetFilters} />
         </Layout.Sidebar>
         <Layout.Feed isLoading={isLoading}>
-          {false && <RatingChart data={[]} />}
           {isLoading ? (
             <Loader active inline="centered" />
-          ) : (
+            ) : (
+              <React.Fragment>
+              {isChartVisible && <RatingChart data={chartData} />}
             <HotelsList hotels={displayedHotels} selectHotel={noop} />
+              </React.Fragment>
           )}
         </Layout.Feed>
       </Layout>
@@ -87,9 +95,9 @@ function applyFilter(filters, data) {
 
 function prepareChartData(hotels) {
   return hotels.map(h => ({
-    rating: h.rating.average,
-    price: h.price.amount,
-    reviews: h.rating.reviews,
+    rating: +h.rating.average,
+    price: +h.price.amount,
+    reviews: +h.rating.reviews,
     name: h.title,
   }));
 }
