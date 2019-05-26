@@ -15,6 +15,7 @@ const SelectHotel = props => {
   const [hotels, setHotels] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [filters, setFilters] = useState({});
+  const [sortField, setSortField] = useState('price');
 
   useEffect(() => {
     setIsLoading(true);
@@ -34,9 +35,17 @@ const SelectHotel = props => {
     return applyFilter(filters, hotels);
   }, [filters, hotels]);
 
+  const displayedHotels = useMemo(() => {
+    return applySort(filteredHotels, sortField);
+  }, [filteredHotels, sortField]);
+
+  function handleSort(field) {
+    setSortField(field);
+  }
+ 
   return (
     <Container>
-      <SortBar sortField={'price'} setField={noop} />
+      <SortBar sortField={sortField} setField={handleSort} />
       <Layout>
         <Layout.Sidebar>
           <ChartSwitcher isChartVisible={false} switchChartVisible={noop} />
@@ -47,7 +56,7 @@ const SelectHotel = props => {
           {isLoading ? (
             <Loader active inline="centered" />
           ) : (
-            <HotelsList hotels={filteredHotels} selectHotel={noop} />
+            <HotelsList hotels={displayedHotels} selectHotel={noop} />
           )}
         </Layout.Feed>
       </Layout>
