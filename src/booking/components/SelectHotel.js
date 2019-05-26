@@ -30,9 +30,9 @@ const SelectHotel = props => {
       });
   }, []); // empty array because we only run once 
 
-  function handleSetFilters(v, checked) {
+  const handleSetFilters = useCallback((v, checked) => {
     setFilters(prevState => ({...prevState, [v]: checked}));
-  }
+  }, []);
 
   const filteredHotels = useMemo(() => {
     return applyFilter(filters, hotels);
@@ -42,9 +42,7 @@ const SelectHotel = props => {
     return applySort(filteredHotels, sortField);
   }, [filteredHotels, sortField]);
 
-  function handleSort(field) {
-    setSortField(field);
-  }
+  const handleSort = field => setSortField(field);
 
   function toggleChartVisibility(chartVisible) {
     setChartVisible(chartVisible);
