@@ -12,14 +12,17 @@ import { ONLINE_URL, BEDS_TYPE } from '../../utils/const';
 
 const SelectHotel = props => {
   const [hotels, setHotels] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true);
     fetch(ONLINE_URL)
       .then(response => response.json())
       .then(data => {
         setHotels(data.list); // set hotels in state
+        setIsLoading(false);
       });
-  }, []); // empty array because we only run once
+  }, []); // empty array because we only run once 
 
   return (
     <Container>
@@ -27,11 +30,11 @@ const SelectHotel = props => {
       <Layout>
         <Layout.Sidebar>
           <ChartSwitcher isChartVisible={false} switchChartVisible={noop} />
-          <Filters count={{}} onChange={noop} />
+          <Filters count={{}} onChange={noop()} />
         </Layout.Sidebar>
-        <Layout.Feed isLoading={true}>
+        <Layout.Feed isLoading={isLoading}>
           {false && <RatingChart data={[]} />}
-          {false ? (
+          {isLoading ? (
             <Loader active inline="centered" />
           ) : (
             <HotelsList hotels={hotels} selectHotel={noop} />
